@@ -96,7 +96,7 @@ for i in toInstall:
     except Exception as e:
         print("ERROR: "+str(e))
         raise forceExit(e)
-    run("mkdir /tmp/%s"%i["name"])
+    run("mkdir -p /tmp/%s"%i["name"])
     open(file("/tmp/%s/%s.tar.xz" % (i["name"], i["version"])), "wb").write(r.content)
 
 print("\n[*] Verifying package integrity")
@@ -107,7 +107,7 @@ for i in toInstall:
     except Exception as e:
         print("ERROR: "+str(e))
         raise forceExit(e)
-    run("mkdir /tmp/%s"%i["name"])
+    run("mkdir -p /tmp/%s"%i["name"])
     open(file("/tmp/%s/%s.tar.xz.md5" % (i["name"], i["version"])), "wb").write(r.content)
     sig = md5(file("/tmp/%s/%s.tar.xz" % (i["name"], i["version"])))
     if sig != open(file("/tmp/%s/%s.tar.xz.md5" % (i["name"], i["version"])), "r").read().strip():
