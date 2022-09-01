@@ -31,15 +31,21 @@ for i in files:
 def isinstalled(pkg):
     return next((item for item in installed if item["name"] == pkg), None)
 def find(pkg):
-    return next((item for item in allPkgs if item["name"] == pkg), None)
+    package = next((item for item in allPkgs if item["name"] == pkg), None)
+    if package == None:
+        print("Package '%s' not found in repository pool." % pkg)
+        return None
+    else:
+        return package
 
 installed = ast.literal_eval(open(file("/etc/nebps/installed.conf"), "r").read())
 toInstall = []
 dependancies = []
 for i in args:
     pkg = find(i)
-    if not pkg in toInstall:
-        toInstall.append(pkg)
+    if pkg != None:
+        if not pkg in toInstall:
+            toInstall.append(pkg)
     #if pkg in installed:
     #    print("Package `%s` already installed." % pkg["name"])
 
