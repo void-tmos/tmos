@@ -1,0 +1,32 @@
+[
+  {
+    "name":"bananaman",
+    "pprint":"Banana Man",
+    "rusts":"no",
+    "rustc":"no",
+    "pythons":"yes",
+    "version":"0.1",
+    "location":"https://voidtm.tk/nebps/bananaman/files",
+    "dependancies":[],
+  },
+  {
+    "name":"ramsay",
+    "pprint":"Ramsay",
+    "rusts":"no",
+    "rustc":"no",
+    "pythons":"yes",
+    "version":"1",
+    "location":"https://voidtm.tk/nebps/ramsay/files",
+    "dependancies":[],
+  },
+  {
+    "name":"nel",
+    "pprint":"NEL",
+    "rusts":"no",
+    "rustc":"no",
+    "pythons":"yes",
+    "version":"1",
+    "location":"https://voidtm.tk/nebps/nel/files",
+    "dependancies":[],
+  }
+]

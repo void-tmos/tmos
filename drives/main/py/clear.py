@@ -1,0 +1,1 @@
+os.system('clear') #clear the terminal

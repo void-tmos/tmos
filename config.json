@@ -1,0 +1,5 @@
+{
+  "startupmsg": "Welcome to the BIOS™",
+  "actionmsg": "Press a key or press Return to continue",
+  "bootOrder": ["main"],
+}
