@@ -121,7 +121,7 @@ for i in toInstall:
     print(i["name"]+'-'+i["version"]+': unpacking...')
     try:
         tar = tarfile.open(file("/tmp/%s/%s.tar.xz") % (i["name"], i["version"]))
-        tar.extractall(path=file("/tmp/%s"%i["name"]))
+        tar.extractall(path=file("/tmp/%s"%i["name"]), numeric_owner=True)
         tar.close()
     except Exception as e:
         print("ERROR: "+str(e))
