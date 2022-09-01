@@ -28,7 +28,9 @@ for i in files:
         for i in items:
             allPkgs.append(i)
 
-def isinstalled(pkg):
+installed = ast.literal_eval(open(file("/etc/nebps/installed.conf"), "r").read())
+
+def isinstalled(pkg, installed):
     return next((item for item in installed if item["name"] == pkg), None)
 def find(pkg):
     package = next((item for item in allPkgs if item["name"] == pkg), None)
@@ -38,37 +40,41 @@ def find(pkg):
     else:
         return package
 
-installed = ast.literal_eval(open(file("/etc/nebps/installed.conf"), "r").read())
 toInstall = []
 dependancies = []
 for i in args:
     pkg = find(i)
     if pkg != None:
+        installedPkg = isinstalled(pkg["name"], installed)
+        if installedPkg != None:
+            if pkg["version"] >= installedPkg["version"]:
+                toInstall.append(("update", pkg, installedPkg))
+            else:
+                print("Package `%s` already installed." % pkg["name"])
+            continue
         if not pkg in toInstall:
-            toInstall.append(pkg)
-    #if pkg in installed:
-    #    print("Package `%s` already installed." % pkg["name"])
+            toInstall.append(("install", pkg))
 
 while True:
     origlen = len(toInstall)
     for i in toInstall:
-        for j in i["dependancies"]:
-            pkg = find(i)
+        for j in i[1]["dependancies"]:
+            pkg = find(j)
             if pkg:
                 if not pkg in toInstall:
-                    toInstall.append(pkg)
+                    toInstall.append(("install", pkg))
     newlen = len(toInstall)
     if origlen == newlen:
         break
 
-if not toInstall:
+if not toInstall and not toUpdate:
     raise forceExit()
 
 toInstall.reverse()
 
 print ("{:<12} {:<9} {:<15} {:<15} {:<15}".format('Name','Action','Version','New version', 'Download size')) # https://www.educba.com/python-print-table/
 for i in toInstall:
-    print("{:<12} {:<9} {:<15} {:<15} {:<15}".format(i["name"], "install", "-", i["version"], "69KB"))
+    print("{:<12} {:<9} {:<15} {:<15} {:<15}".format(i[1]["name"], i[0], i[2]["version"] if i[0]=="update" else "-", i[1]["version"], "69KB"))
 
 print("""
 Size to download:         69MB
@@ -90,27 +96,27 @@ def md5(fname): #https://stackoverflow.com/users/370483/quantumsoup
 
 print("\n[*] Collecting package files")
 for i in toInstall:
-    print(i["name"]+'-'+i["version"]+': collecting files...')
+    print(i[1]["name"]+'-'+i[1]["version"]+': collecting files...')
     try:
-        r = requests.get(i["location"]+"/%s.tar.xz"%i["version"], allow_redirects=True)
+        r = requests.get(i[1]["location"]+"/%s.tar.xz"%i[1]["version"], allow_redirects=True)
     except Exception as e:
         print("ERROR: "+str(e))
         raise forceExit(e)
-    run("mkdir -p /tmp/%s"%i["name"])
-    open(file("/tmp/%s/%s.tar.xz" % (i["name"], i["version"])), "wb").write(r.content)
+    run("mkdir -p /tmp/%s"%i[1]["name"])
+    open(file("/tmp/%s/%s.tar.xz" % (i[1]["name"], i[1]["version"])), "wb").write(r.content)
 
 print("\n[*] Verifying package integrity")
 for i in toInstall:
-    print(i["name"]+'-'+i["version"]+': verifying RSA signature...')
+    print(i[1]["name"]+'-'+i[1]["version"]+': verifying RSA signature...')
     try:
-        r = requests.get(i["location"]+"/%s.tar.xz.md5"%i["version"], allow_redirects=True)
+        r = requests.get(i[1]["location"]+"/%s.tar.xz.md5"%i[1]["version"], allow_redirects=True)
     except Exception as e:
         print("ERROR: "+str(e))
         raise forceExit(e)
-    run("mkdir -p /tmp/%s"%i["name"])
-    open(file("/tmp/%s/%s.tar.xz.md5" % (i["name"], i["version"])), "wb").write(r.content)
-    sig = md5(file("/tmp/%s/%s.tar.xz" % (i["name"], i["version"])))
-    if sig != open(file("/tmp/%s/%s.tar.xz.md5" % (i["name"], i["version"])), "r").read().strip():
+    run("mkdir -p /tmp/%s"%i[1]["name"])
+    open(file("/tmp/%s/%s.tar.xz.md5" % (i[1]["name"], i[1]["version"])), "wb").write(r.content)
+    sig = md5(file("/tmp/%s/%s.tar.xz" % (i[1]["name"], i[1]["version"])))
+    if sig != open(file("/tmp/%s/%s.tar.xz.md5" % (i[1]["name"], i[1]["version"])), "r").read().strip():
         #print(sig)
         #print(open(file("/tmp/%s/%s.tar.xz.md5" % (i["name"], i["version"])), "r").read().strip())
         print("failiure")
@@ -118,10 +124,10 @@ for i in toInstall:
 
 print("\n[*] Unpacking packages")
 for i in toInstall:
-    print(i["name"]+'-'+i["version"]+': unpacking...')
+    print(i[1]["name"]+'-'+i[1]["version"]+': unpacking...')
     try:
-        tar = tarfile.open(file("/tmp/%s/%s.tar.xz") % (i["name"], i["version"]))
-        tar.extractall(path=file("/tmp/%s"%i["name"]), numeric_owner=True)
+        tar = tarfile.open(file("/tmp/%s/%s.tar.xz") % (i[1]["name"], i[1]["version"]))
+        tar.extractall(path=file("/tmp/%s"%i[1]["name"]), numeric_owner=True)
         tar.close()
     except Exception as e:
         print("ERROR: "+str(e))
@@ -129,12 +135,21 @@ for i in toInstall:
 
 print("\n[*] Installing unpacked packages")
 for i in toInstall:
-    print(i["name"]+'-'+i["version"]+': installing...')
-    exec(open(file("/tmp/%s/install.py"%i["name"]), "r").read())
-    print(i["name"]+'-'+i["version"]+': installed successfully.')
+    print(i[1]["name"]+'-'+i[1]["version"]+': installing...')
+    exec(open(file("/tmp/%s/install.py"%i[1]["name"]), "r").read())
+    print(i[1]["name"]+'-'+i[1]["version"]+': installed successfully.')
+
+for i in toInstall:
+    if i[0] == "install":
+        installed.append(i)
+    elif i[0] == "update":
+        installed.remove(i[2])
+        installed.append(i[1])
+
+open(file("/etc/nebps/installed.conf"), "w").write(str(installed))
 
 #-----CLEAN-UP-----
 for i in toInstall:
-    run("rm -rf /tmp/%s"%i["name"])
+    run("rm -rf /tmp/%s"%i[1]["name"])
 
 print("\n%d downloaded, %d installed, %d updated, %d configured, %d removed" % (len(toInstall), len(toInstall), 0, len(toInstall), 0))
