@@ -5,6 +5,8 @@ parser.parse(args)
 args = parser.args
 opts = parser.output
 
+run("mkdir -p /tmp")
+
 if opts["sync"]:
     allRepos = open(file("/etc/nebps/repo.list", "w")).read().splitlines()
     for i in allRepos:
@@ -16,7 +18,7 @@ if opts["sync"]:
             raise forceExit(e)
         allDirs = i.split("/")
         open(file("/etc/nebps/repos/"+allDirs[-1]), "wb").write(r.content)
-        
+
 global allPkgs
 allPkgs = []
 files = os.listdir(file("/etc/nebps/repos"))
@@ -52,7 +54,7 @@ while True:
     newlen = len(toInstall)
     if origlen == newlen:
         break
-    
+
 if not toInstall:
     raise forceExit()
 
@@ -118,13 +120,13 @@ for i in toInstall:
     except Exception as e:
         print("ERROR: "+str(e))
         raise forceExit()
-    
+
 print("\n[*] Installing unpacked packages")
 for i in toInstall:
     print(i["name"]+'-'+i["version"]+': installing...')
     exec(open(file("/tmp/%s/install.py"%i["name"]), "r").read())
     print(i["name"]+'-'+i["version"]+': installed successfully.')
-    
+
 #-----CLEAN-UP-----
 for i in toInstall:
     run("rm -rf /tmp/%s"%i["name"])
