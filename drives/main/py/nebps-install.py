@@ -142,7 +142,7 @@ for pkg in toInstall:
 
 for i in toInstall:
     if i[0] == "install":
-        installed.append(i)
+        installed.append(i[1])
     elif i[0] == "update":
         installed.remove(i[2])
         installed.append(i[1])
