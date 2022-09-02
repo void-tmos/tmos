@@ -62,7 +62,8 @@ while True:
             pkg = find(j)
             if pkg:
                 if not pkg in toInstall:
-                    toInstall.append(("install", pkg))
+                    if not isinstalled(pkg["name"], installed):
+                        toInstall.append(("install", pkg))
     newlen = len(toInstall)
     if origlen == newlen:
         break
