@@ -67,7 +67,7 @@ while True:
     if origlen == newlen:
         break
 
-if not toInstall and not toUpdate:
+if not toInstall:
     raise forceExit()
 
 toInstall.reverse()

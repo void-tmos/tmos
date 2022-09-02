@@ -5,8 +5,8 @@
     "rusts":"no",
     "rustc":"no",
     "pythons":"yes",
-    "version":"0.1",
-    "location":"https://voidtm.tk/nebps/bananaman/files",
+    "version":"1",
+    "location":"https://github.com/void-tmos/bananaman/raw/master/versions/",
     "dependancies":[],
   },
   {
@@ -16,7 +16,7 @@
     "rustc":"no",
     "pythons":"yes",
     "version":"1",
-    "location":"https://voidtm.tk/nebps/ramsay/files",
+    "location":"https://github.com/void-tmos/ramsay/raw/master/versions/",
     "dependancies":[],
   },
   {
@@ -27,6 +27,16 @@
     "pythons":"yes",
     "version":"1",
     "location":"https://voidtm.tk/nebps/nel/files",
+    "dependancies":[],
+  },
+  {
+    "name":"motd",
+    "pprint":"MOTD",
+    "rusts":"no",
+    "rustc":"no",
+    "pythons":"yes",
+    "version":"1.1",
+    "location":"https://github.com/void-tmos/motd/raw/master/versions/",
     "dependancies":[],
   }
 ]
