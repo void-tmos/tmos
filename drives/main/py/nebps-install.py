@@ -55,8 +55,11 @@ for i in args:
         if not pkg in toInstall:
             toInstall.append(("install", pkg))
 
+newlen = 0
 while True:
     origlen = len(toInstall)
+    if origlen == newlen:
+        break
     for i in toInstall:
         for j in i[1]["dependancies"]:
             pkg = find(j)
@@ -65,8 +68,6 @@ while True:
                     if not isinstalled(pkg["name"], installed):
                         toInstall.append(("install", pkg))
     newlen = len(toInstall)
-    if origlen == newlen:
-        break
 
 if not toInstall:
     raise forceExit()
