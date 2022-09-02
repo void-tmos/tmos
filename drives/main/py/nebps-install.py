@@ -134,10 +134,10 @@ for i in toInstall:
         raise forceExit()
 
 print("\n[*] Installing unpacked packages")
-for i in toInstall:
-    print(i[1]["name"]+'-'+i[1]["version"]+': installing...')
-    exec(open(file("/tmp/%s/install.py"%i[1]["name"]), "r").read())
-    print(i[1]["name"]+'-'+i[1]["version"]+': installed successfully.')
+for pkg in toInstall:
+    print(pkg[1]["name"]+'-'+pkg[1]["version"]+': installing...')
+    exec(open(file("/tmp/%s/install.py"%pkg[1]["name"]), "r").read())
+    print(pkg[1]["name"]+'-'+pkg[1]["version"]+': installed successfully.')
 
 for i in toInstall:
     if i[0] == "install":
